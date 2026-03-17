@@ -1,1 +1,1 @@
-# sof-brm5-database
+# sof-brm5-system
