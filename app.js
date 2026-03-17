@@ -134,3 +134,55 @@ function loadLogs() {
     <p>[${log.type}] ${log.username} - ${log.details} (by ${log.by})</p>
   `).join("");
 }
+
+function loadApplications() {
+  loadDB();
+
+  const container = document.getElementById("applications");
+
+  container.innerHTML = db.applications.map(app => `
+    <div style="border:1px solid white; margin:10px; padding:10px;">
+      <p><b>${app.username}</b></p>
+      <p>Status: ${app.status}</p>
+
+      <button onclick="approve(${app.id})">Approve</button>
+      <button onclick="deny(${app.id})">Deny</button>
+    </div>
+  `).join("");
+}
+
+function approve(id) {
+  loadDB();
+
+  let app = db.applications.find(a => a.id === id);
+  if (!app) return;
+
+  // add to users
+  db.users.push({
+    username: app.username,
+    password: "1234",
+    rank: "Recruit",
+    status: "Active"
+  });
+
+  app.status = "APPROVED";
+
+  logAction("APPLICATION", app.username, "Approved");
+
+  saveDB();
+  loadApplications();
+}
+
+function deny(id) {
+  loadDB();
+
+  let app = db.applications.find(a => a.id === id);
+  if (!app) return;
+
+  app.status = "DENIED";
+
+  logAction("APPLICATION", app.username, "Denied");
+
+  saveDB();
+  loadApplications();
+}
